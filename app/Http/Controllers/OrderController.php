@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Http\Resources\OrderResource;
 use App\Services\Contracts\OrderServiceInterface;
 use App\Models\Order;
+use App\DTOs\CreateOrderData;
 
 class OrderController extends Controller
 {
@@ -29,7 +30,8 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         $validated = $request->validated();
-        $order = $this->orderService->createOrder($validated);
+        $dto = CreateOrderData::fromArray($validated);
+        $order = $this->orderService->createOrder($dto);
         return (new OrderResource($order))
             ->response()
             ->setStatusCode(201);
