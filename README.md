@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-# laravel-shop-tz
-=======
-# Laravel Shop (Orders Demo)
+# Laravel-Shop
 
 ## Требования
 - Docker, Docker Compose
@@ -96,9 +93,7 @@ docker compose exec -e XDEBUG_MODE=off php-fpm php artisan test
 - Создание заказа защищено от двойных нажатий с помощью `idempotency_key` (уникально в паре с `user_id`).
 
 ### Troubleshooting
-- Сообщение `Database connection [pqsql] not configured.` — в `.env` должна быть строка `DB_CONNECTION=pgsql` (не `pqsql`). После правок: `docker compose exec -e XDEBUG_MODE=off php-fpm php artisan config:clear`.
 - Предупреждения Xdebug в CLI — можно отключить на время команд: `-e XDEBUG_MODE=off` (как в примерах выше).
-- Порт 5432 на хосте занят — измените проброс в `docker-compose.yml` на `5433:5432` и в `.env` оставьте `DB_PORT=5432` (Laravel подключается к контейнеру `db`).
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
@@ -161,4 +156,4 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
->>>>>>> b6e26b6 (Инициализация проекта)
+
