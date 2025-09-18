@@ -42,20 +42,22 @@ docker compose exec -e XDEBUG_MODE=off php-fpm php artisan migrate --seed
 
 - Список заказов:
 ```
-curl -s http://localhost:8282/orders | jq .
+curl -s -H 'Accept: application/json' http://localhost:8282/api/orders | jq .
 ```
 
 - Детали заказа:
 ```
-curl -s http://localhost:8282/orders/1 | jq .
+curl -s -H 'Accept: application/json' http://localhost:8282/api/orders/1 | jq .
 ```
 
 - Создание заказа:
 ```
-curl -s -X POST http://localhost:8282/orders \
+curl -s -X POST http://localhost:8282/api/orders \
   -H 'Content-Type: application/json' \
+  -H 'Accept: application/json' \
   -d '{
     "user_id": 1,
+    "idempotency_key": "unique-key-123",
     "items": [
       {"product_id": 1, "quantity": 2},
       {"product_id": 2, "quantity": 1}
@@ -63,16 +65,18 @@ curl -s -X POST http://localhost:8282/orders \
   }' | jq .
 ```
 
+
 - Обновление статуса заказа:
 ```
-curl -s -X PATCH http://localhost:8282/orders/1 \
+curl -s -X PATCH http://localhost:8282/api/orders/1 \
   -H 'Content-Type: application/json' \
+  -H 'Accept: application/json' \
   -d '{"status": "processed"}' | jq .
 ```
 
 - Удаление заказа:
 ```
-curl -s -X DELETE http://localhost:8282/orders/1 | jq .
+curl -s -X DELETE http://localhost:8282/api/orders/1 -H 'Accept: application/json' | jq .
 ```
 
 ## Тесты
@@ -84,16 +88,18 @@ docker compose exec -e XDEBUG_MODE=off php-fpm php artisan test
 ## Проверка, что всё работает
 - После `migrate --seed` должно быть:
   - 5 пользователей, 10 товаров, 5 заказов (у каждого ≥ 2 товара)
-- Проверьте список заказов: `curl -s http://localhost:8282/orders | jq '.[0]'`
+- Проверьте список заказов: `curl -s -H 'Accept: application/json' http://localhost:8282/api/orders | jq '.data[0]'`
 
 ## Примечания
 - Nginx слушает порт 8282.
 - PostgreSQL работает в контейнере `db` (порт 5432).
-- Создана таблица `order_product` c количеством товара в заказе.
-- Создание заказа защищено от двойных нажатий с помощью `idempotency_key` (уникально в паре с `user_id`).
+- Создана таблица order_product c количеством товара в заказе.
+- Создание заказа защищено от двойных нажатий с помощью idempotency_key (уникально в паре с user_id).
 
 ### Troubleshooting
 - Предупреждения Xdebug в CLI — можно отключить на время команд: `-e XDEBUG_MODE=off` (как в примерах выше).
+
+ 
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 

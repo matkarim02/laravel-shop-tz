@@ -12,7 +12,10 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->enum('status', ['new', 'processed', 'completed'])->default('new');
             $table->decimal('total_price', 12, 2)->default(0);
+            $table->string('idempotency_key')->nullable();
             $table->timestamps();
+
+            $table->unique(['user_id', 'idempotency_key']);
         });
     }
 

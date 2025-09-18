@@ -30,26 +30,30 @@ class OrderTest extends TestCase
         }
         $order->update(['total_price' => $total]);
 
-        $response = $this->get('/orders');
+        $response = $this->get('/api/orders');
         $response->assertStatus(200);
         $response->assertJsonFragment(['id' => $order->id]);
-        $response->assertJsonCount(3, '0.products');
+        $response->assertJsonCount(3, 'data.0.products');
     }
 
-    public function test_order_creation(): void
+    public function test_idempotent_order_creation(): void
     {
         $user = User::factory()->create();
         $products = Product::factory()->count(2)->create();
         $payload = [
             'user_id' => $user->id,
+            'idempotency_key' => 'abc123',
             'items' => [
                 ['product_id' => $products[0]->id, 'quantity' => 2],
                 ['product_id' => $products[1]->id, 'quantity' => 1],
             ],
         ];
 
-        $first = $this->postJson('/orders', $payload);
+        $first = $this->postJson('/api/orders', $payload);
         $first->assertStatus(201);
+        $second = $this->postJson('/api/orders', $payload);
+        $second->assertStatus(201);
+        $this->assertEquals($first->json('data.id'), $second->json('data.id'));
     }
 }
 

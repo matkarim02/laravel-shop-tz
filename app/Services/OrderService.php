@@ -7,6 +7,7 @@ use App\DTOs\CreateOrderData;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class OrderService implements OrderServiceInterface
 {
@@ -20,10 +21,22 @@ class OrderService implements OrderServiceInterface
     public function createOrder(CreateOrderData $data): Order
     {
         return DB::transaction(function () use ($data) {
+            $key = request()->input('idempotency_key');
+            if ($key) {
+                $existing = Order::with(['user', 'products'])
+                    ->where('user_id', $data->userId)
+                    ->where('idempotency_key', $key)
+                    ->first();
+                if ($existing) {
+                    return $existing;
+                }
+            }
+
             $order = new Order();
             $order->user_id = $data->userId;
             $order->status = 'new';
             $order->total_price = 0;
+            $order->idempotency_key = $key;
             $order->save();
 
             $total = 0;
@@ -52,6 +65,8 @@ class OrderService implements OrderServiceInterface
     {
         $order->delete();
     }
+
+    
 }
 
 
