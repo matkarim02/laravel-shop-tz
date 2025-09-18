@@ -1,42 +1,50 @@
 # Laravel-Shop
 
+## Клонирование и запуск
+
+1. Клонируйте репозиторий:
+   ```
+   git clone https://github.com/matkarim02/laravel-shop-tz laravel-shop
+   cd laravel-shop
+   ```
+
+2. Скопируйте пример окружения и установите значения для Docker:
+   ```
+   cp .env.example .env
+   ```
+   В `.env` убедитесь, что указано:
+   ```
+   APP_URL=http://localhost:8282
+   DB_CONNECTION=pgsql
+   DB_HOST=db
+   DB_PORT=5432
+   DB_DATABASE=laravel
+   DB_USERNAME=laravel
+   DB_PASSWORD=laravel
+   ```
+
+3. Запустите контейнеры:
+   ```
+   docker compose up -d --build
+   ```
+
+4. Установите зависимости и сгенерируйте ключ приложения:
+   ```
+   docker compose exec php-fpm composer install
+   docker compose exec php-fpm php artisan key:generate
+   ```
+
+5. Примените миграции и сиды:
+   ```
+   docker compose exec -e XDEBUG_MODE=off php-fpm php artisan migrate --seed
+   ```
+
+6. Приложение будет доступно:
+   - http://localhost:8282
+
 ## Требования
 - Docker, Docker Compose
 - (опционально) jq для форматирования JSON: `sudo apt-get install jq`
-
-## Быстрый старт
-1. Скопируйте `.env.example` в `.env` и обновите настройки БД под Docker:
-```
-APP_ENV=local
-APP_KEY=
-APP_DEBUG=true
-APP_URL=http://localhost:8282
-
-DB_CONNECTION=pgsql
-DB_HOST=db
-DB_PORT=5432
-DB_DATABASE=laravel
-DB_USERNAME=laravel
-DB_PASSWORD=laravel
-```
-
-2. Запустите контейнеры:
-```
-docker compose up -d --build
-```
-
-3. Установите зависимости и сгенерируйте ключ:
-```
-docker compose exec php-fpm composer install
-docker compose exec php-fpm php artisan key:generate
-```
-
-4. Выполните миграции и сиды:
-```
-docker compose exec -e XDEBUG_MODE=off php-fpm php artisan migrate --seed
-```
-
-5. Приложение доступно: http://localhost:8282
 
 ## Endpoints (curl)
 
